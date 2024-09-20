@@ -4,5 +4,6 @@ numpy
 helper
 preprocessor
 seaborn
-word
-cloudemoki
+matplotlib
+streamlit
+
