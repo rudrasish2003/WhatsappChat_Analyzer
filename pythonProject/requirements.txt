@@ -6,4 +6,6 @@ preprocessor
 seaborn
 matplotlib
 streamlit
-
+wordcloud
+collection
+emoji
