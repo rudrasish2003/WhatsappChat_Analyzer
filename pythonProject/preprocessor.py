@@ -3,7 +3,7 @@ import pandas as pd
 
 def preprocess(data):
     # Updated regex pattern for 12-hour format with AM/PM
-    pattern = r'\d{1,2}/\d{1,2}/\d{2,4},\s\d{1,2}:\d{2}\s[APMapm]{2}\s-\s'
+    pattern = r'\d{1,2}/\d{1,2}/\d{2},\s\d{1,2}:\d{2}\s[APMapm]{2}\s-\s'
 
     # Split the data by the pattern and find dates
     messages = re.split(pattern, data)[1:]
@@ -15,8 +15,12 @@ def preprocess(data):
     # Remove any non-standard spaces (like Unicode narrow no-break spaces)
     df['message_date'] = df['message_date'].str.replace(r'\u202f', ' ', regex=True)
 
-    # Convert 'message_date' type - updated for 12-hour format
-    df['message_date'] = pd.to_datetime(df['message_date'], format='%d/%m/%Y, %I:%M %p - ')
+    # Convert 'message_date' type - updated for dd/mm/yy 12-hour format
+    df['message_date'] = pd.to_datetime(df['message_date'], format='%d/%m/%y, %I:%M %p - ', errors='coerce')
+
+    # Check for any rows where date conversion failed
+    if df['message_date'].isna().any():
+        print("Warning: Some dates could not be parsed and were set to NaT.")
 
     # Rename columns
     df.rename(columns={'message_date': 'date'}, inplace=True)
