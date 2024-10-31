@@ -2,6 +2,7 @@ import streamlit as st
 import preprocessor, helper
 import matplotlib.pyplot as plt
 import seaborn as sns
+from datetime import datetime
 import pandas as pd
 
 st.sidebar.title("WhatsApp Chat Analyzer")
@@ -32,13 +33,6 @@ if uploaded_file is not None:
         start_date = st.sidebar.date_input("Start date", min(df['date']), min(df['date']))
         end_date = st.sidebar.date_input("End date", max(df['date']), max(df['date']))
 
-        # Custom words to exclude
-        st.sidebar.title("Exclude Words")
-        exclude_words = st.sidebar.text_area("Enter words to exclude (comma-separated)", "").split(',')
-
-        # Clean up exclude_words to remove any whitespace
-        exclude_words = [word.strip().lower() for word in exclude_words if word.strip()]
-
         # Filter DataFrame by date range
         if start_date <= end_date:
             df = df[(df['date'] >= pd.to_datetime(start_date)) & (df['date'] <= pd.to_datetime(end_date))]
@@ -46,6 +40,7 @@ if uploaded_file is not None:
             st.sidebar.error("End date should be greater than or equal to the start date.")
 
         if st.sidebar.button("Show Analysis"):
+            
             # Stats Area
             num_messages, words, num_media_messages, num_links = helper.fetch_stats(selected_user, df)
             st.title("Top Statistics")
@@ -85,7 +80,7 @@ if uploaded_file is not None:
             col1, col2 = st.columns(2)
 
             with col1:
-                st.header("Most Busy Day")
+                st.header("Most busy day")
                 busy_day = helper.week_activity_map(selected_user, df)
                 fig, ax = plt.subplots()
                 ax.bar(busy_day.index, busy_day.values, color='purple')
@@ -93,7 +88,7 @@ if uploaded_file is not None:
                 st.pyplot(fig)
 
             with col2:
-                st.header("Most Busy Month")
+                st.header("Most busy month")
                 busy_month = helper.month_activity_map(selected_user, df)
                 fig, ax = plt.subplots()
                 ax.bar(busy_month.index, busy_month.values, color='orange')
@@ -124,13 +119,13 @@ if uploaded_file is not None:
 
             # WordCloud
             st.title("Wordcloud")
-            df_wc = helper.create_wordcloud(selected_user, df, exclude_words)
+            df_wc = helper.create_wordcloud(selected_user, df)
             fig, ax = plt.subplots()
             ax.imshow(df_wc)
             st.pyplot(fig)
 
             # Most common words
-            most_common_df = helper.most_common_words(selected_user, df, exclude_words)
+            most_common_df = helper.most_common_words(selected_user, df)
             fig, ax = plt.subplots()
             ax.barh(most_common_df[0], most_common_df[1])
             plt.xticks(rotation='vertical')
