@@ -2,7 +2,6 @@ import streamlit as st
 import preprocessor, helper
 import matplotlib.pyplot as plt
 import seaborn as sns
-from datetime import datetime
 import pandas as pd
 
 st.sidebar.title("WhatsApp Chat Analyzer")
@@ -37,6 +36,9 @@ if uploaded_file is not None:
         st.sidebar.title("Exclude Words")
         exclude_words = st.sidebar.text_area("Enter words to exclude (comma-separated)", "").split(',')
 
+        # Clean up exclude_words to remove any whitespace
+        exclude_words = [word.strip().lower() for word in exclude_words if word.strip()]
+
         # Filter DataFrame by date range
         if start_date <= end_date:
             df = df[(df['date'] >= pd.to_datetime(start_date)) & (df['date'] <= pd.to_datetime(end_date))]
@@ -44,7 +46,6 @@ if uploaded_file is not None:
             st.sidebar.error("End date should be greater than or equal to the start date.")
 
         if st.sidebar.button("Show Analysis"):
-            
             # Stats Area
             num_messages, words, num_media_messages, num_links = helper.fetch_stats(selected_user, df)
             st.title("Top Statistics")
@@ -84,7 +85,7 @@ if uploaded_file is not None:
             col1, col2 = st.columns(2)
 
             with col1:
-                st.header("Most busy day")
+                st.header("Most Busy Day")
                 busy_day = helper.week_activity_map(selected_user, df)
                 fig, ax = plt.subplots()
                 ax.bar(busy_day.index, busy_day.values, color='purple')
@@ -92,7 +93,7 @@ if uploaded_file is not None:
                 st.pyplot(fig)
 
             with col2:
-                st.header("Most busy month")
+                st.header("Most Busy Month")
                 busy_month = helper.month_activity_map(selected_user, df)
                 fig, ax = plt.subplots()
                 ax.bar(busy_month.index, busy_month.values, color='orange')
