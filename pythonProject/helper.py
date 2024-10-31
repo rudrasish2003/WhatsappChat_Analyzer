@@ -44,7 +44,7 @@ def most_busy_users(df):
         columns={'index': 'name', 'user': 'percent'})
     return x, df
 
-def create_wordcloud(selected_user, df):
+def create_wordcloud(selected_user, df, exclude_words=[]):
     if selected_user != 'Overall':
         df = df[df['user'] == selected_user]
 
@@ -52,16 +52,16 @@ def create_wordcloud(selected_user, df):
     temp = df[df['user'] != 'group_notification']
     temp = temp[temp['message'] != '<Media omitted>\n']
 
-    # Remove stop words
+    # Remove stop words and excluded words
     def remove_stop_words(message):
-        return " ".join(word for word in message.lower().split() if word not in stop_words)
+        return " ".join(word for word in message.lower().split() if word not in stop_words and word not in exclude_words)
 
     wc = WordCloud(width=500, height=500, min_font_size=10, background_color='white')
     temp['message'] = temp['message'].apply(remove_stop_words)
     df_wc = wc.generate(temp['message'].str.cat(sep=" "))
     return df_wc
 
-def most_common_words(selected_user, df):
+def most_common_words(selected_user, df, exclude_words=[]):
     if selected_user != 'Overall':
         df = df[df['user'] == selected_user]
 
@@ -74,7 +74,7 @@ def most_common_words(selected_user, df):
     # Collect non-stop words
     for message in temp['message']:
         for word in message.lower().split():
-            if word not in stop_words:
+            if word not in stop_words and word not in exclude_words:
                 words.append(word)
 
     most_common_df = pd.DataFrame(Counter(words).most_common(20))

@@ -33,6 +33,10 @@ if uploaded_file is not None:
         start_date = st.sidebar.date_input("Start date", min(df['date']), min(df['date']))
         end_date = st.sidebar.date_input("End date", max(df['date']), max(df['date']))
 
+        # Custom words to exclude
+        st.sidebar.title("Exclude Words")
+        exclude_words = st.sidebar.text_area("Enter words to exclude (comma-separated)", "").split(',')
+
         # Filter DataFrame by date range
         if start_date <= end_date:
             df = df[(df['date'] >= pd.to_datetime(start_date)) & (df['date'] <= pd.to_datetime(end_date))]
@@ -119,13 +123,13 @@ if uploaded_file is not None:
 
             # WordCloud
             st.title("Wordcloud")
-            df_wc = helper.create_wordcloud(selected_user, df)
+            df_wc = helper.create_wordcloud(selected_user, df, exclude_words)
             fig, ax = plt.subplots()
             ax.imshow(df_wc)
             st.pyplot(fig)
 
             # Most common words
-            most_common_df = helper.most_common_words(selected_user, df)
+            most_common_df = helper.most_common_words(selected_user, df, exclude_words)
             fig, ax = plt.subplots()
             ax.barh(most_common_df[0], most_common_df[1])
             plt.xticks(rotation='vertical')
