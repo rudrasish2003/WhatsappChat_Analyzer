@@ -9,7 +9,7 @@ extract = URLExtract()
 
 # Load stop words once at the beginning
 try:
-    with open('stop_hinglish.txt', 'r') as f:
+    with open('pythonProject/stop_hinglish.txt', 'r') as f:
         stop_words = f.read().splitlines()  # Convert to list for easier checking
 except FileNotFoundError:
     print("Error: 'stop_hinglish.txt' file not found.")
